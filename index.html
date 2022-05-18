@@ -5,11 +5,16 @@
       <h1>Browser </h1>
       <div><button onclick="document.querySelector('#recorder').style.display = 'grid'">open recorder emulator</button></div>
       <div>
+        <div>
+          wss://ws-relay.stefanbreitenstein.workers.dev
+          or use
+          ws://127.0.0.1:8080
+        </div>
         <span>relay server: </span>
         <input class="relayServer" type="text" value="wss://ws-relay.stefanbreitenstein.workers.dev">
         <span>channel uuid: </span>
         <input class="channelUuid" type="text" value="123">
-        <button onclick="client.connect()"> connect to relay server</button>
+        <button onclick="client.connect()"> connect to (relay) server</button>
       </div>
 
       <div>
