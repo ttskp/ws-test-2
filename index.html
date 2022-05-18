@@ -1,43 +1,62 @@
 <html>
-  
-  <body style="display: grid">
-    
-    
-    <div>
+
+  <body style="display: grid; gap: 8px; grid-template-columns: auto auto">
+
+
+    <div id="client" style="display: grid; gap: 8px">
       <h1>Client </h1>
-      
-      <span>payload</span>
+      <span>relay server: </span><input class="relayServer" type="text" value="wss://ws-server.tts-dev-team-jedi.workers.dev/">
+
+      <div>payload</div>
       <textarea>
       </textarea>
-      <button> sendTo Recorder via relay server wss </button>
-      <button> sendTo Recorder via relay server fetch </button>
-      <button> sendTo Recorder on localhost </button>
-      
-      <span> received </span>
+      <button onclick="client.connect()"> connect to relay server</button>
+      <button> sendTo Client via relay server wss </button>
+      <button> sendTo Client via relay server fetch </button>
+      <button> sendTo Client on localhost </button>
+
+      <div> received </div>
       <div>
-        
+
       </div>
-      
+      <script>
+
+        window.client = {
+          connect(){
+            const wsServerUrl = document.querySelector('#client').querySelector('.relayServer').value;
+
+            console.log("connect to ",wsServerUrl)
+            const websocket = new WebSocket(wsServerUrl);
+            websocket.addEventListener('message', event => {
+              console.log('Message received from server');
+              console.log(event.data);
+            });
+            window.client.websocket = websocket;
+          }
+        }
+
+
+      </script>
     </div>
-    
-    
-    <div>
+
+
+    <div style="display: grid; gap: 8px">
       <h1>Recorder </h1>
-      
-      <span>payload</span>
+
+      <div>payload</div>
       <textarea>
       </textarea>
       <button> sendTo Recorder via relay server wss </button>
       <button> sendTo Recorder via relay server fetch </button>
       <button> sendTo Recorder on localhost </button>
-      
-      <span> received </span>
+
+      <div> received </div>
       <div>
-        
+
       </div>
-      
+
     </div>
-    
+
   </body>
 
 </html>
