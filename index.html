@@ -1,12 +1,14 @@
 <html>
-
   <body style="display: grid; gap: 8px; grid-template-columns: auto auto">
 
-
     <div id="client" style="display: grid; gap: 8px; background-color: rgba(255, 0, 0, 0.02)">
-      <h1>Client </h1>
+      <h1>Browser </h1>
+      <div><button onclick="document.querySelector('#recorder').style.display = 'grid'">open recorder emulator</button></div>
       <div>
-        <span>relay server: </span><input class="relayServer" type="text" value="wss://ws-relay.stefanbreitenstein.workers.dev">
+        <span>relay server: </span>
+        <input class="relayServer" type="text" value="wss://ws-relay.stefanbreitenstein.workers.dev">
+        <span>channel uuid: </span>
+        <input class="channelUuid" type="text" value="123">
         <button onclick="client.connect()"> connect to relay server</button>
       </div>
 
@@ -16,30 +18,36 @@
         </textarea>
       </div>
 
-      <button onclick="client.sendPayload()"> sendTo Recorder via relay server wss </button>
-      <button> sendTo Recorder via relay server fetch </button>
-      <button> sendTo Recorder on localhost </button>
+      <button onclick="client.sendPayload()"> via relay server ws(s) </button>
+      <button> via relay server fetch </button>
 
       <div>
         <h4>received</h4>
         <div class="received"> </div>
       </div>
-      <script>
+      <script type="module">
+         import { nanoid } from 'https://cdn.jsdelivr.net/npm/nanoid/nanoid.js'
+
+         window.channelUuid =nanoid(5);
+         document.querySelector('#client').querySelector('.channelUuid').value = window.channelUuid;
 
         window.client = {
           html: document.querySelector('#client'),
-          sendTo: 'recorder',
           connect(){
             const wsServerUrl = this.html.querySelector('.relayServer').value;
 
-            console.log("client connect to ",wsServerUrl)
+            console.log("browser connect to %s with channel uuid %s", wsServerUrl, this.html.querySelector(".channelUuid").value)
             const websocket = new WebSocket(wsServerUrl);
             websocket.addEventListener('message', event => {
               console.log('Message received from server');
+              console.log(event);
               this.html.querySelector('.received').innerHTML += `${event.data} <br>`
             });
             websocket.addEventListener('open', () => {
-              websocket.send("register-as-client");
+              websocket.send(JSON.stringify({
+                command: "create-or-join-channel",
+                channelUuid: this.html.querySelector(".channelUuid").value
+              }));
             })
             this.websocket = websocket;
           },
@@ -47,7 +55,7 @@
             const payload =  this.html.querySelector('textarea').value;
             console.log(payload);
             this.websocket.send(JSON.stringify({
-              to: this.sendTo,
+              channelUuid: this.html.querySelector(".channelUuid").value,
               payload
             }))
           }
@@ -58,11 +66,13 @@
     </div>
 
 
-    <div id="recorder" style="display: grid; gap: 8px; background-color: rgba(0, 0, 255, 0.02)">
-      <h1>Recorder </h1>
-
+    <div id="recorder" style="display: none; gap: 8px; background-color: rgba(0, 0, 255, 0.02)">
+      <h1>Recorder Emulator</h1>
+      <div style="position: absolute; right: 20px; cursor: pointer;" onclick="document.querySelector('#recorder').style.display = 'none'"> x </div>
       <div>
         <span>relay server: </span><input class="relayServer" type="text" value="wss://ws-relay.stefanbreitenstein.workers.dev">
+        <span>channel uuid: </span>
+        <input class="channelUuid" type="text" value="123">
         <button onclick="recorder.connect()"> connect to relay server</button>
       </div>
 
@@ -72,31 +82,34 @@
         </textarea>
       </div>
 
-      <button onclick="recorder.sendPayload()"> sendTo Client via relay server wss </button>
-      <button> sendTo Client via relay server fetch </button>
-      <button> sendTo Client on localhost </button>
+      <button onclick="recorder.sendPayload()"> via relay server ws(s) </button>
+      <button> via relay server fetch </button>
 
       <div>
         <h4>received</h4>
         <div class="received"> </div>
       </div>
 
-      <script>
-
+      <script type="module">
+        document.querySelector('#recorder').querySelector('.channelUuid').value = window.channelUuid;
         window.recorder = {
           html: document.querySelector('#recorder'),
           sendTo: 'client',
           connect(){
             const wsServerUrl = this.html.querySelector('.relayServer').value;
 
-            console.log("recorder connect to ",wsServerUrl)
+            console.log("browser connect to %s with channel uuid %s", wsServerUrl, this.html.querySelector(".channelUuid").value)
             const websocket = new WebSocket(wsServerUrl);
             websocket.addEventListener('message', event => {
               console.log('Message received from server');
+              console.log(event);
               this.html.querySelector('.received').innerHTML += `${event.data} <br>`
             });
             websocket.addEventListener('open', () => {
-              websocket.send("register-as-recorder");
+              websocket.send(JSON.stringify({
+                command: "create-or-join-channel",
+                channelUuid: this.html.querySelector(".channelUuid").value
+              }));
             })
             this.websocket = websocket;
           },
@@ -104,7 +117,7 @@
             const payload =  this.html.querySelector('textarea').value;
             console.log(payload);
             this.websocket.send(JSON.stringify({
-              to: this.sendTo,
+              channelUuid: this.html.querySelector(".channelUuid").value,
               payload
             }))
           }

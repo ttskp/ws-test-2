@@ -14,11 +14,9 @@ async function handleRequest(request, env) {
 
 // Durable Object
 
-export class Relay10 {
+export class Relay11 {
   constructor(state, env) {
-    this.state = state;
-    this.clients = [];
-    this.recorders = [];
+    this.channels = {};
   }
 
   // Handle HTTP requests from clients.
@@ -28,33 +26,29 @@ export class Relay10 {
       return new Response('Expected Upgrade: websocket', { status: 426 });
     }
 
-    console.log('hello');
-
     const webSocketPair = new WebSocketPair();
     const [client, server] = Object.values(webSocketPair);
     server.accept();
 
     server.addEventListener('message', async event => {
-      if(event.data === 'register-as-client'){
-        console.log('register as client');
-        this.clients.push(server);
-        server.send('registered as client');
-        return;
-      }
-      if(event.data === 'register-as-recorder'){
-        console.log('register as recorder');
-        this.recorders.push(server);
-        server.send('registered as recorder');
-        return;
-      }
-      console.log('received data');
-
       const data = JSON.parse(event.data);
-      if(data.to !== 'client' && data.to !== 'recorder'){
-        server.send('unknown message');
+      console.log('incoming...');
+      console.log(event.data);
+
+      if(data.command === 'create-or-join-channel'){
+        console.log('create or join....');
+        console.log(this.channels)
+        if(this.channels[data.channelUuid] === undefined){
+          this.channels[data.channelUuid] = [server];
+          server.send('channel created '+data.channelUuid)
+        } else {
+          this.channels[data.channelUuid].push(server);
+          server.send('channel joined '+data.channelUuid)
+        }
         return;
       }
-      for (const e of data.to === 'client' ? this.clients : this.recorders) {
+
+      for (const e of (this.channels[data.channelUuid] ?? [])) {
         try {
           e.send(data.payload);
         } catch(e){

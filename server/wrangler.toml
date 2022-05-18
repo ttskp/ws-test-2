@@ -4,7 +4,7 @@ compatibility_date = "2022-05-18"
 
 [durable_objects]
 bindings = [
-    { name = "RELAY", class_name = "Relay10" } # Binding to our DurableObjectExample class
+    { name = "RELAY", class_name = "Relay11" } # Binding to our DurableObjectExample class
 ]
 
 
@@ -19,3 +19,8 @@ new_classes = ["Relay9"]
 tag = "v10" # Should be unique for each entry
 deleted_classes = ["Relay8"] # Array of deleted class names
 new_classes = ["Relay10"]
+
+[[migrations]]
+tag = "v11" # Should be unique for each entry
+deleted_classes = ["Relay10"] # Array of deleted class names
+new_classes = ["Relay11"]
