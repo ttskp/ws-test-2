@@ -1,0 +1,27 @@
+name = "ws-relay"
+main = "src/index.js"
+compatibility_date = "2022-05-18"
+
+[durable_objects]
+bindings = [
+    { name = "RELAY", class_name = "Relay6" } # Binding to our DurableObjectExample class
+]
+
+[[migrations]]
+tag = "v1" # Should be unique for each entry
+new_classes = ["Relay"]
+
+[[migrations]]
+tag = "v4" # Should be unique for each entry
+deleted_classes = ["Relay"] # Array of deleted class names
+new_classes = ["Relay2"]
+
+[[migrations]]
+tag = "v5" # Should be unique for each entry
+deleted_classes = ["Relay2"] # Array of deleted class names
+new_classes = ["Relay5"]
+
+[[migrations]]
+tag = "v6" # Should be unique for each entry
+deleted_classes = ["Relay5"] # Array of deleted class names
+new_classes = ["Relay6"]

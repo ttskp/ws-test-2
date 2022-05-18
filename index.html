@@ -3,35 +3,53 @@
   <body style="display: grid; gap: 8px; grid-template-columns: auto auto">
 
 
-    <div id="client" style="display: grid; gap: 8px">
+    <div id="client" style="display: grid; gap: 8px; background-color: rgba(255, 0, 0, 0.02)">
       <h1>Client </h1>
-      <span>relay server: </span><input class="relayServer" type="text" value="wss://ws-server.tts-dev-team-jedi.workers.dev/">
-
-      <div>payload</div>
-      <textarea>
-      </textarea>
-      <button onclick="client.connect()"> connect to relay server</button>
-      <button> sendTo Client via relay server wss </button>
-      <button> sendTo Client via relay server fetch </button>
-      <button> sendTo Client on localhost </button>
-
-      <div> received </div>
       <div>
+        <span>relay server: </span><input class="relayServer" type="text" value="wss://ws-relay.stefanbreitenstein.workers.dev">
+        <button onclick="client.connect()"> connect to relay server</button>
+      </div>
 
+      <div>
+        <div>payload</div>
+        <textarea style="height: 250px; width: 400px;">
+        </textarea>
+      </div>
+
+      <button onclick="client.sendPayload()"> sendTo Recorder via relay server wss </button>
+      <button> sendTo Recorder via relay server fetch </button>
+      <button> sendTo Recorder on localhost </button>
+
+      <div>
+        <h4>received</h4>
+        <div class="received"> </div>
       </div>
       <script>
 
         window.client = {
+          html: document.querySelector('#client'),
+          sendTo: 'recorder',
           connect(){
-            const wsServerUrl = document.querySelector('#client').querySelector('.relayServer').value;
+            const wsServerUrl = this.html.querySelector('.relayServer').value;
 
-            console.log("connect to ",wsServerUrl)
+            console.log("client connect to ",wsServerUrl)
             const websocket = new WebSocket(wsServerUrl);
             websocket.addEventListener('message', event => {
               console.log('Message received from server');
-              console.log(event.data);
+              this.html.querySelector('.received').innerHTML += `${event.data} <br>`
             });
-            window.client.websocket = websocket;
+            websocket.addEventListener('open', () => {
+              websocket.send("register-as-client");
+            })
+            this.websocket = websocket;
+          },
+          sendPayload(){
+            const payload =  this.html.querySelector('textarea').value;
+            console.log(payload);
+            this.websocket.send(JSON.stringify({
+              to: this.sendTo,
+              payload
+            }))
           }
         }
 
@@ -40,20 +58,51 @@
     </div>
 
 
-    <div style="display: grid; gap: 8px">
+    <div id="recorder" style="display: grid; gap: 8px; background-color: rgba(0, 0, 255, 0.02)">
       <h1>Recorder </h1>
 
-      <div>payload</div>
-      <textarea>
-      </textarea>
-      <button> sendTo Recorder via relay server wss </button>
-      <button> sendTo Recorder via relay server fetch </button>
-      <button> sendTo Recorder on localhost </button>
-
-      <div> received </div>
       <div>
-
+        <span>relay server: </span><input class="relayServer" type="text" value="wss://ws-relay.stefanbreitenstein.workers.dev">
+        <button onclick="recorder.connect()"> connect to relay server</button>
       </div>
+
+      <div>
+        <div>payload</div>
+        <textarea style="height: 250px; width: 400px;">
+        </textarea>
+      </div>
+
+      <button> sendTo Client via relay server wss </button>
+      <button> sendTo Client via relay server fetch </button>
+      <button> sendTo Client on localhost </button>
+
+      <div>
+        <h4>received</h4>
+        <div class="received"> </div>
+      </div>
+
+      <script>
+
+        window.recorder = {
+          html: document.querySelector('#recorder'),
+          connect(){
+            const wsServerUrl = this.html.querySelector('.relayServer').value;
+
+            console.log("recorder connect to ",wsServerUrl)
+            const websocket = new WebSocket(wsServerUrl);
+            websocket.addEventListener('message', event => {
+              console.log('Message received from server');
+              this.html.querySelector('.received').innerHTML += `${event.data} <br>`
+            });
+            websocket.addEventListener('open', () => {
+              websocket.send("register-as-recorder");
+            })
+            this.websocket = websocket;
+          }
+        }
+
+
+      </script>
 
     </div>
 
