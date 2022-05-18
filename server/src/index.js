@@ -14,7 +14,7 @@ async function handleRequest(request, env) {
 
 // Durable Object
 
-export class Relay7 {
+export class Relay10 {
   constructor(state, env) {
     this.state = state;
     this.clients = [];
@@ -50,33 +50,18 @@ export class Relay7 {
       console.log('received data');
 
       const data = JSON.parse(event.data);
-      console.log(data);
-      if(data.to === 'client'){
-        for (const e of this.clients) {
-          try {
-            return e.send(data.payload);
-          } catch(e){
-            console.log(e)
-          }
-        }
-        server.send('message send');
-
+      if(data.to !== 'client' && data.to !== 'recorder'){
+        server.send('unknown message');
         return;
       }
-
-      if(data.to === 'recorder'){
-        for (const e of this.recorders) {
-          try {
-            return e.send(data.payload);
-          } catch(e){
-            console.log(e)
-          }
+      for (const e of data.to === 'client' ? this.clients : this.recorders) {
+        try {
+          e.send(data.payload);
+        } catch(e){
+          console.log(e)
+          server.send('error');
         }
-        server.send('message send');
-        return;
       }
-
-      server.send('unknown message');
 
     });
 
