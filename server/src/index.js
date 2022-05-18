@@ -14,7 +14,7 @@ async function handleRequest(request, env) {
 
 // Durable Object
 
-export class Relay6 {
+export class Relay7 {
   constructor(state, env) {
     this.state = state;
     this.clients = [];
@@ -37,15 +37,14 @@ export class Relay6 {
     server.addEventListener('message', async event => {
       if(event.data === 'register-as-client'){
         console.log('register as client');
-        server.send('registered as client');
         this.clients.push(server);
+        server.send('registered as client');
         return;
       }
       if(event.data === 'register-as-recorder'){
         console.log('register as recorder');
-        server.send('registered as recorder');
-        let value = (await this.state.storage.get("recorders")) || [];
         this.recorders.push(server);
+        server.send('registered as recorder');
         return;
       }
       console.log('received data');

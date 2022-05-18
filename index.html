@@ -72,7 +72,7 @@
         </textarea>
       </div>
 
-      <button> sendTo Client via relay server wss </button>
+      <button onclick="recorder.sendPayload()"> sendTo Client via relay server wss </button>
       <button> sendTo Client via relay server fetch </button>
       <button> sendTo Client on localhost </button>
 
@@ -85,6 +85,7 @@
 
         window.recorder = {
           html: document.querySelector('#recorder'),
+          sendTo: 'client',
           connect(){
             const wsServerUrl = this.html.querySelector('.relayServer').value;
 
@@ -98,6 +99,14 @@
               websocket.send("register-as-recorder");
             })
             this.websocket = websocket;
+          },
+          sendPayload(){
+            const payload =  this.html.querySelector('textarea').value;
+            console.log(payload);
+            this.websocket.send(JSON.stringify({
+              to: this.sendTo,
+              payload
+            }))
           }
         }
 
