@@ -24,7 +24,9 @@ export class Relay11 {
     const upgradeHeader = request.headers.get('Upgrade');
     if (!upgradeHeader || upgradeHeader !== 'websocket') {
       if(request.method === 'POST'){
-          const data = JSON.parse(request.body);
+          console.log('incoming post...');
+          const data = await request.json();
+          console.log(data);
           for (const e of (this.channels[data.channelUuid] ?? [])) {
             try {
               e.send(data.payload);
@@ -32,7 +34,11 @@ export class Relay11 {
               console.log(e)
             }
           }
-          return new Response('', { status: 200 });
+
+          return new Response('', { status: 200, headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
+            } });
       }
       return new Response('Expected Upgrade: websocket', { status: 426 });
     }
