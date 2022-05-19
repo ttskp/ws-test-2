@@ -3,8 +3,13 @@
 > This is a websocket "chatroom" implementation. 
 >
 > Which can communicate via
-> - Http Post Request
 > - (Secure) Websocket
+> - Http Post Request
+
+
+[Demoseite](https://ttskp.github.io/ws-test-2/)
+
+[Miro](https://miro.com/app/board/uXjVO_FVfoY=/)
 
 ## Testcases
 
