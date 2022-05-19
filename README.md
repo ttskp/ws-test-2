@@ -8,7 +8,7 @@
 
 ## Testcases
 
-### Websocket with localhost (WIP)
+### Websocket with localhost
 
 Create a websocket server on localhost. 
 
