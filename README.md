@@ -83,7 +83,7 @@ websocket.send(JSON.stringify({
 ```
 
 
-### HTTP-Post with relay server (WIP)
+### HTTP-Post with relay server
 You can also send post requests to the relay-server. 
 The requests will be redirected to the other clients via wss.
 
