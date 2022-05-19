@@ -1,81 +1,84 @@
 # Readme
 
 > This is a websocket "chatroom" implementation. 
+>
 > Which can communicate via
 > - Http Post Request
 > - (Secure) Websocket
 
-### Register 
+## Testcases
 
+### Websocket with localhost (WIP)
 
-
-### Testcases
-
-#### Ws with localhost (WIP)
 Create a websocket server on localhost. 
-The port must be higher then 1024.
-Eg. 8008
+
+The port must be >1024. E.g. 8008
+
 A node server could be found under `localhost`
-To start the node server: 
-```
+
+To start the node server
+
+```bash
+  cd localhost
   npm ci
   npm run serve
 ```
 
-Insert the URL into the "Relay-Server"-Textfield on the page.
-Eg: `ws://localhost:8008`
+Insert the URL into the "Relay-Server"-Textfield on the page: 
+
+`ws://localhost:8008`
 
 
-#### Wss with relay-server
-Instead a local websocket server, you could use
-our hosted websocket-server
+### Secure Websocket with relay-server
+Instead, a local websocket server, you could use our hosted websocket-server:
 
+`wss://ws-relay.stefanbreitenstein.workers.dev`
 
-#### Browser/Client "protocol"
+### Browser/Client Websocket "protocol"
 After connect to the websocket server and the `CONNECT` event was received.
-Following message must be send, as JSON-string:
+Following message must be sent, as JSON-String:
 
-```
-websocket.send('{
+```js
+websocket.send(`{
     "command":"create-or-join-channel",
     "channelUuid":"<uuid-or-nanoid-as-string>"
-}')
+}`)
 ```
 
-After that messages could be send on the channel. 
-```
-websocket.send('{
-    "channelUuid":"<uuid-or-nanoid-as-string>",
+After that messages could be sent on the channel. 
+```js
+websocket.send(`{
+    "channelUuid": "<uuid-or-nanoid-as-string>",
     "payload":"<given-message>"
-}')
+}`)
 ```
 
 #### Working Example
-```
-# client_1
-# Create a new Channel
+```js
+// client_1
+// Create a new Channel
 websocket.send(JSON.stringify({
-    command: "create-or-join-channel",
-    channelUuid: "foobar"
-}))
+  command: "create-or-join-channel",
+  channelUuid: "foobar"
+}));
 
-# client_2
-# Join Channel:
+// client_2
+// Join Channel:
 websocket.send(JSON.stringify({
-    command: "create-or-join-channel",
-    channelUuid: "foobar"
-}))
+  command: "create-or-join-channel",
+  channelUuid: "foobar"
+}));
 
-# client_2
-# Send message, will be shown on Client_1 and Client_2
+// client_2
+// Send message, will be shown on Client_1 and Client_2
 websocket.send(JSON.stringify({
     channelUuid: "foobar",
     payload: "bazzz"
-}))
+}));
 ```
 
 
-#### HTTP-Post with relay server (WIP)
+### HTTP-Post with relay server (WIP)
 You can also send post requests the relay-server. 
 The requests will be redirected to the other clients via wss.
 
