@@ -24,7 +24,7 @@
       </div>
 
       <button onclick="client.sendPayload()"> via relay server ws(s) </button>
-      <button> via relay server fetch </button>
+      <button onclick="client.sendPayloadViaFetch()"> via relay server fetch (http-post) </button>
 
       <div>
         <h4>received</h4>
@@ -58,11 +58,17 @@
           },
           sendPayload(){
             const payload =  this.html.querySelector('textarea').value;
-            console.log(payload);
-            this.websocket.send(JSON.stringify({
-              channelUuid: this.html.querySelector(".channelUuid").value,
-              payload
-            }))
+            const channelUuid = this.html.querySelector(".channelUuid").value;
+            this.websocket.send(JSON.stringify({channelUuid, payload}));
+          },
+          sendPayloadViaFetch(){
+            const wsServerUrl = this.html.querySelector('.relayServer').value.replace('wss://', 'https://');
+            const payload = this.html.querySelector('textarea').value;
+            const channelUuid = this.html.querySelector(".channelUuid").value;
+            fetch(wsServerUrl, {
+              method: 'POST',
+              body: JSON.stringify({channelUuid, payload})
+            });
           }
         }
 
@@ -88,7 +94,7 @@
       </div>
 
       <button onclick="recorder.sendPayload()"> via relay server ws(s) </button>
-      <button> via relay server fetch </button>
+      <button onclick="recorder.sendPayloadViaFetch()"> via relay server fetch (http-post) </button>
 
       <div>
         <h4>received</h4>
@@ -100,7 +106,7 @@
         window.recorder = {
           html: document.querySelector('#recorder'),
           sendTo: 'client',
-          connect(){
+          connect() {
             const wsServerUrl = this.html.querySelector('.relayServer').value;
 
             console.log("browser connect to %s with channel uuid %s", wsServerUrl, this.html.querySelector(".channelUuid").value)
@@ -118,15 +124,21 @@
             })
             this.websocket = websocket;
           },
-          sendPayload(){
-            const payload =  this.html.querySelector('textarea').value;
-            console.log(payload);
-            this.websocket.send(JSON.stringify({
-              channelUuid: this.html.querySelector(".channelUuid").value,
-              payload
-            }))
+          sendPayload() {
+            const payload = this.html.querySelector('textarea').value;
+            const channelUuid = this.html.querySelector(".channelUuid").value;
+            this.websocket.send(JSON.stringify({channelUuid, payload}));
+          },
+          sendPayloadViaFetch() {
+            const wsServerUrl = this.html.querySelector('.relayServer').value.replace('wss://', 'https://');
+            const payload = this.html.querySelector('textarea').value;
+            const channelUuid = this.html.querySelector(".channelUuid").value;
+            fetch(wsServerUrl, {
+              method: 'POST',
+              body: JSON.stringify({channelUuid, payload})
+            });
           }
-        }
+        };
 
 
       </script>

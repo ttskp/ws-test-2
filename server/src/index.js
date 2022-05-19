@@ -23,6 +23,17 @@ export class Relay11 {
   async fetch(request) {
     const upgradeHeader = request.headers.get('Upgrade');
     if (!upgradeHeader || upgradeHeader !== 'websocket') {
+      if(request.method === 'POST'){
+          const data = JSON.parse(request.body);
+          for (const e of (this.channels[data.channelUuid] ?? [])) {
+            try {
+              e.send(data.payload);
+            } catch(e){
+              console.log(e)
+            }
+          }
+          return new Response('', { status: 200 });
+      }
       return new Response('Expected Upgrade: websocket', { status: 426 });
     }
 
