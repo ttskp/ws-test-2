@@ -79,25 +79,25 @@ websocket.send(JSON.stringify({
 
 
 ### HTTP-Post with relay server (WIP)
-You can also send post requests the relay-server. 
+You can also send post requests to the relay-server. 
 The requests will be redirected to the other clients via wss.
 
 ##### Working Example
-```
-# client_1
-# Create a new Channel
+```js
+// client_1
+// Create a new Channel
 websocket.send(JSON.stringify({
     command: "create-or-join-channel",
     channelUuid: "foobar"
-}))
+}));
 
-# client_2
-# Send message directly via post, will be shown on Client_1
-fetch("given_url", {
-    method: "Post"
+// client_2
+// Send message directly via post, will be shown on Client_1
+fetch("wss://ws-relay.stefanbreitenstein.workers.dev", {
+    method: "Post",
     body: JSON.stringify({
         channelUuid: "foobar",
         payload: "bazzz"
     })
-}))
+});
 ``` 
