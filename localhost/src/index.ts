@@ -16,18 +16,6 @@ const wsServer = new websocket.server({
   autoAcceptConnections: false
 });
 
-const send = async (connection: websocket.connection, message: any) => new Promise<void>((resolve, reject) => {
-  const utfMessage = JSON.stringify(message);
-  log(`Sending ${utfMessage}`);
-  connection.sendUTF(utfMessage, (error => {
-    if (error) {
-      reject(error);
-    } else {
-      resolve()
-    }
-  }));
-});
-
 
 const log = (message: string) => {
   console.log(`${new Date()} ${message}`);
@@ -40,7 +28,7 @@ wsServer.on('request', async request => {
   try {
 
     const connection = request.accept();
-//    connections.push(connection);
+
     connection.on('message', (event) => {
       const e = event as IUtf8Message
       const data = JSON.parse(e.utf8Data);
